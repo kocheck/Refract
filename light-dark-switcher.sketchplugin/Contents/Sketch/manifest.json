@@ -1,10 +1,10 @@
 {
-  "name": "Light/Dark Mode Switcher",
+  "name": "Refract",
   "identifier": "com.refract.light-dark-switcher",
   "version": "1.0.0",
   "description": "A smart Sketch plugin that switches components between light and dark variants based on naming conventions",
-  "author": "Refract",
-  "authorEmail": "hello@refract.com",
+  "author": "Kyle Kochanek",
+  "authorEmail": "hello@kylekochanek.com",
   "compatibleVersion": "3.0.0",
   "bundleVersion": 1,
   "disableCocoaScriptPreprocessor": true,
@@ -46,7 +46,7 @@
     }
   ],
   "menu": {
-    "title": "Light/Dark Switcher",
+    "title": "Refract",
     "items": [
       "switchToDark",
       "switchToLight",

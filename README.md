@@ -1,4 +1,4 @@
-# Light/Dark Mode Switcher for Sketch
+# Refract
 
 A smart Sketch plugin that switches components between light and dark variants based on naming conventions.
 
@@ -7,15 +7,15 @@ A smart Sketch plugin that switches components between light and dark variants b
 - 🔄 **Smart Mode Switching**: Automatically switches between light/dark variants
 - 🎯 **Intelligent Detection**: Skips components already in the target mode
 - 🏗️ **Recursive Processing**: Handles nested components and groups
-- 🎨 **Comprehensive Support**: Works with symbols, colors, and styles
+- 🎨 **Shared Style Support**: Works with text styles and layer styles
 - ⚡ **Batch Operations**: Process entire pages at once
-- 💾 **Preserves Overrides**: Maintains symbol overrides during switching
+- 💾 **Override Clearing**: Ensures new styles are fully applied without manual overrides
 
 ## Installation
 
 1. Download the latest release from the [releases page](https://github.com/kocheck/Refract/releases)
 2. Double-click `light-dark-switcher.sketchplugin` to install
-3. Find the plugin under **Plugins → Light/Dark Switcher**
+3. Find the plugin under **Plugins → Refract**
 
 ## Usage
 
@@ -23,16 +23,14 @@ A smart Sketch plugin that switches components between light and dark variants b
 
 The plugin relies on a consistent naming pattern:
 ```
-[component] / [mode] / [variant]
+[component]/[mode]/[variant]
 ```
 
 **Examples:**
-- `button / light / primary`
-- `button / dark / primary`
-- `color / light / text-primary`
-- `color / dark / text-primary`
-- `input / light / default`
-- `input / dark / error`
+- `test/light/bg` and `test/dark/bg`
+- `text/light/primary` and `text/dark/primary`
+- `button/light/default` and `button/dark/default`
+- `card/light/surface` and `card/dark/surface`
 
 ### Keyboard Shortcuts
 
@@ -46,90 +44,87 @@ The plugin relies on a consistent naming pattern:
 
 ### Basic Workflow
 
-1. **Select layers** you want to switch (symbols, text, shapes, etc.)
-2. **Use keyboard shortcut** or go to **Plugins → Light/Dark Switcher**
-3. **Choose action**:
+1. **Create your shared styles** following the naming convention (e.g., `text/light/primary`, `text/dark/primary`)
+2. **Apply shared styles** to your text and layers (not manual styling)
+3. **Select layers** you want to switch
+4. **Use keyboard shortcut** or go to **Plugins → Refract**
+5. **Choose action**:
    - Switch to specific mode (light/dark)
    - Toggle between modes
    - Process entire page
 
 ### What Gets Switched
 
-The plugin intelligently handles multiple layer types:
+The plugin focuses on **shared styles** - the most reliable way to manage design systems:
 
-#### Symbol Instances
+#### Shared Text Styles
+- Switches text layers with shared text styles applied
+- Clears manual text overrides to ensure new style is fully applied
+- Example: `text/light/primary` → `text/dark/primary`
+
+#### Shared Layer Styles
+- Switches layers (shapes, frames) with shared layer styles applied
+- Clears manual fill/border overrides to ensure new style is fully applied
+- Example: `test/light/bg` → `test/dark/bg`
+
+#### Symbol Instances (Basic Support)
 - Switches symbol instances to their light/dark variants
 - Preserves symbol overrides when possible
-- Example: `button / light / primary` → `button / dark / primary`
-
-#### Color Variables
-- Updates fill colors using color variables
-- Updates border colors using color variables
-- Updates text colors using color variables
-- Example: `color / light / background` → `color / dark / background`
-
-#### Shared Styles
-- Switches text styles to their mode variants
-- Switches layer styles to their mode variants
-- Example: `heading / light / large` → `heading / dark / large`
+- Example: `button/light/primary` → `button/dark/primary`
 
 ## How It Works
 
 ### Smart Detection
-The plugin analyzes layer names to detect the current mode:
-- Extracts the mode from the naming convention
+The plugin analyzes shared style names to detect the current mode:
+- Uses `/` as separator (e.g., `component/mode/variant`)
+- Extracts the mode from the middle part
 - Skips layers already in the target mode
 - Reports switched vs. skipped counts
 
+### Override Clearing
+**Key Feature**: The plugin clears manual style overrides to ensure the new shared style is fully applied:
+- Sets new shared style: `layer.sharedStyle = newStyle`
+- Clears overrides: `layer.style = newStyle.style`
+- This prevents old manual colors from persisting over new shared styles
+
 ### Recursive Processing
 - Processes selected layers and all their children
-- Handles nested groups and artboards
+- Handles nested groups and frames
 - Maintains layer hierarchy and structure
-
-### Mode Switching Logic
-1. **Detect current mode** from layer name
-2. **Skip if already correct** mode to avoid unnecessary work
-3. **Build target name** by replacing mode in naming convention
-4. **Find target variant** in document (symbol, style, or variable)
-5. **Switch reference** while preserving overrides/properties
-6. **Report results** to user
 
 ## Examples
 
-### Example 1: Basic Symbol Switching
+### Example 1: Basic Shared Style Switching
+
 ```
-Before: button / light / primary (selected)
+Before: Text layer with "text/light/primary" style applied
 Action: Switch to Dark Mode
-After:  button / dark / primary
+After:  Text layer with "text/dark/primary" style applied
 Result: "Switched to Dark Mode: 1 changed, 0 skipped"
 ```
 
 ### Example 2: Mixed State Handling
+
 ```
 Selection:
-- button / light / primary
-- text / dark / body (already dark)
-- icon / light / arrow
+- Frame with "test/light/bg" layer style
+- Text with "text/dark/primary" style (already dark)
+- Shape with "component/light/surface" style
 
 Action: Switch to Dark Mode
 Result: "Switched to Dark Mode: 2 changed, 1 skipped"
 ```
 
 ### Example 3: Nested Components
+
 ```
-Selection: Card component containing:
-- background (light color variable)
-- button / light / secondary
-- text / light / heading
+Selection: Frame containing:
+- Background with "test/light/bg" layer style
+- Text with "text/light/primary" text style
+- Button symbol "button/light/primary"
 
 Action: Switch to Dark Mode
 Result: All nested components switch to dark variants
-```
-
-### Example 4: Page-Level Switching
-```
-Action: Switch Page to Dark Mode
-Result: Entire page content switches to dark mode variants
 ```
 
 ## Troubleshooting
@@ -137,110 +132,71 @@ Result: Entire page content switches to dark mode variants
 ### Common Issues
 
 **Plugin doesn't switch my component**
-- ✅ Check naming convention: `[component] / [mode] / [variant]`
-- ✅ Ensure target variant exists (e.g., if switching to dark, `component / dark / variant` must exist)
-- ✅ Check console for error messages
+- ✅ Check naming convention: `[component]/[mode]/[variant]` (no spaces around `/`)
+- ✅ Ensure shared styles are applied (not manual styling)
+- ✅ Ensure target variant exists (e.g., if switching to dark, `component/dark/variant` must exist)
+- ✅ Check console for error messages (View → Show Console)
 
-**Overrides are lost after switching**
-- ✅ This happens when target symbol has different override structure
-- ✅ Plugin attempts to preserve compatible overrides
-- ✅ Consider aligning override structures between light/dark variants
+**Colors aren't changing after switching**
+- ✅ Make sure you're using **shared styles**, not manual fills/text colors
+- ✅ Plugin only works with shared text styles and shared layer styles
+- ✅ Manual overrides are cleared automatically, but base layer must use shared style
 
 **Some layers are skipped**
 - ✅ Layers already in target mode are intentionally skipped
+- ✅ Layers without shared styles are skipped
 - ✅ Layers without proper naming convention are skipped
 - ✅ Layers without target variants are skipped
 
-**Plugin seems slow on large documents**
-- ✅ Use selection-based switching instead of page-level for better performance
-- ✅ Consider breaking large designs into multiple pages
-- ✅ Plugin processes recursively, so deeply nested structures take longer
+### Best Practices
 
-### Error Messages
+**For Shared Styles:**
+- Use shared text styles and shared layer styles consistently
+- Follow naming convention exactly: `component/mode/variant`
+- Create both light and dark versions of every style you need
+- Avoid manual styling - always use shared styles
 
-**"Please select layers to switch modes"**
-- No layers selected. Select one or more layers before running the plugin.
+**For Performance:**
+- Use selection-based switching instead of page-level for better performance
+- Test with a few layers first before processing entire pages
 
-**"Target symbol not found: [name]"**
-- The dark/light variant doesn't exist. Create the missing variant symbol.
-
-**"Error: [technical details]"**
-- Check Sketch console (View → Show Console) for detailed error information.
-
-## Best Practices
-
-### Naming Convention
-- **Be consistent** with spacing around separators (`/`)
-- **Use lowercase** for mode names (`light`, `dark`)
-- **Be descriptive** with component and variant names
-- **Avoid special characters** in names
-
-### Symbol Organization
-- **Group related symbols** together in symbol page
-- **Keep light/dark variants adjacent** for easy management
-- **Maintain consistent override structure** between variants
-- **Use descriptive symbol names** that clearly indicate purpose
-
-### Color Variables
-- **Create color libraries** with light/dark variants
-- **Use semantic naming** (`primary`, `secondary`, `background`)
-- **Test color combinations** for accessibility
-- **Document color usage** in design system
-
-### Performance
-- **Use selection-based switching** for targeted changes
-- **Avoid deeply nested structures** when possible
-- **Process in batches** rather than individual layers
-- **Test with sample content** before applying to full designs
+**For Design Systems:**
+- Document your naming conventions
+- Keep style libraries organized
+- Test color combinations for accessibility
+- Use semantic naming (`primary`, `secondary`, `background`)
 
 ## Technical Details
 
 ### Supported Layer Types
-- Symbol instances (`MSSymbolInstance`)
-- Text layers (`MSTextLayer`)
-- Shape layers with fills and borders
-- Groups and artboards (recursive processing)
+- Text layers with shared text styles (`MSTextLayer`)
+- Shape layers with shared layer styles (rectangles, circles, etc.)
+- Symbol instances (basic support)
+- Groups and frames (recursive processing)
 
 ### Sketch API Compatibility
 - **Minimum version**: Sketch 3.0+
 - **Tested versions**: Sketch 70+
-- **API usage**: Native Sketch plugin API
+- **API usage**: Modern Sketch DOM API with `sketch/dom`
 
-### File Structure
-```
-light-dark-switcher.sketchplugin/
-├── Contents/
-│   └── Sketch/
-│       ├── manifest.json     # Plugin configuration
-│       └── script.js         # Main plugin code
-```
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
-- Development setup
-- Code style guidelines
-- Testing procedures
-- Submission process
-
-### Development Setup
-1. Clone the repository
-2. Edit `script.js` in your preferred editor
-3. Test in Sketch using **Plugins → Run Script**
-4. Submit pull request with changes
+### Key Implementation Details
+- Uses modern `sketch.fromNative()` for reliable layer access
+- Clears style overrides with `layer.style = targetStyle.style`
+- Processes layers recursively for nested structures
+- Smart mode detection from shared style names
 
 ## Changelog
 
 ### v1.0.0 (Initial Release)
-- ✅ Basic light/dark mode switching
+- ✅ Shared text style switching with override clearing
+- ✅ Shared layer style switching with override clearing
 - ✅ Symbol instance support with override preservation
-- ✅ Color variable switching (fill, border, text)
-- ✅ Shared style switching (text and layer styles)
 - ✅ Recursive processing of nested layers
 - ✅ Smart detection and skipping logic
+- ✅ Toggle functionality with automatic mode detection
 - ✅ Batch page processing
-- ✅ Toggle functionality
-- ✅ Comprehensive error handling
+- ✅ Modern Sketch API implementation
+- ✅ Comprehensive error handling and debugging
 
 ## License
 
