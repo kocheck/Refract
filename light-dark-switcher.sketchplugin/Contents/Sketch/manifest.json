@@ -1,0 +1,60 @@
+{
+  "name": "Light/Dark Mode Switcher",
+  "identifier": "com.refract.light-dark-switcher",
+  "version": "1.0.0",
+  "description": "A smart Sketch plugin that switches components between light and dark variants based on naming conventions",
+  "author": "Refract",
+  "authorEmail": "hello@refract.com",
+  "compatibleVersion": "3.0.0",
+  "bundleVersion": 1,
+  "disableCocoaScriptPreprocessor": true,
+  "commands": [
+    {
+      "name": "Switch to Dark Mode",
+      "identifier": "switchToDark",
+      "script": "script.js",
+      "handler": "switchToDark",
+      "shortcut": "cmd shift d"
+    },
+    {
+      "name": "Switch to Light Mode",
+      "identifier": "switchToLight",
+      "script": "script.js",
+      "handler": "switchToLight",
+      "shortcut": "cmd shift l"
+    },
+    {
+      "name": "Toggle Light/Dark Mode",
+      "identifier": "toggleMode",
+      "script": "script.js",
+      "handler": "toggleMode",
+      "shortcut": "cmd shift t"
+    },
+    {
+      "name": "Switch Page to Dark Mode",
+      "identifier": "switchPageToDark",
+      "script": "script.js",
+      "handler": "switchPageToDark",
+      "shortcut": "cmd alt shift d"
+    },
+    {
+      "name": "Switch Page to Light Mode",
+      "identifier": "switchPageToLight",
+      "script": "script.js",
+      "handler": "switchPageToLight",
+      "shortcut": "cmd alt shift l"
+    }
+  ],
+  "menu": {
+    "title": "Light/Dark Switcher",
+    "items": [
+      "switchToDark",
+      "switchToLight",
+      "-",
+      "toggleMode",
+      "-",
+      "switchPageToDark",
+      "switchPageToLight"
+    ]
+  }
+}
